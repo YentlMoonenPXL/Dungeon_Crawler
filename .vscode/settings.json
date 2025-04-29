@@ -2,5 +2,8 @@
     "files.associations": {
         "dungeon.h": "c"
     },
-    "C_Cpp.errorSquiggles": "disabled"
+    "C_Cpp.errorSquiggles": "disabled",
+    "files.simpleDialog.enable": false,
+    "workbench.experimental.cloudChanges.partialMatches.enabled": false,
+    "github.gitAuthentication": true
 }

@@ -1,5 +1,4 @@
 #define CLEAR_SCREEN() printf("\e[1;1H\e[2J")
-#define HPBLOCK "\U0001F533"
 #ifndef DUNGEON_H
 #define DUNGEON_H
 
@@ -40,6 +39,7 @@ typedef struct Player {
 Room* generateDungeon(int aantalKamers);
 void playGame(Player* speler, int aantalKamers);
 void freeDungeon(Room* startRoom, int aantalKamers);
+int alVerbonden(Room* kamer, Room* target);
 
 void saveGameJson(Player* player, Room* Kamers, int aantalKamers, const char* filename);
 Player* loadGameJson(Room** kamersOut, int* aantalKamersOut, const char* filename);

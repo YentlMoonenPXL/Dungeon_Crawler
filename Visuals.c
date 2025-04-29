@@ -30,27 +30,38 @@ void PRINTHOME() {
 
 void PRINTSTATS(Player* speler) {
     CLEAR_SCREEN();
-    printf("\nHP:     [ ");
-    for (int i = 0; i < 10; i++)
-    {   
-        if (i == 5) {
-            if ((speler->hp / 3) > i)
-            {
-                printf("\033[41m%d/30\x1b[0m ", speler->hp);
+    if (speler->hp == 0) {
+        printf("\nHP:     \033[31m0\x1b[0m/30 [ ☠ ☠ ☠ ☠ ☠ ☠ ☠ ☠ ☠ ☠ ]", speler->hp);
+    }
+    else {
+        printf("\nHP:          %d/30 ", speler->hp);
+        if(speler->hp < 10) {
+            printf(" [");
+        } else {
+            printf("[");
+        }
+        for (int i = 0; i < 10; i++)
+        {   
+            if ((speler->hp / 3) > i) {
+                printf("\033[31m ❤ \x1b[0m");
             } else {
-                printf("%d/30 ", speler->hp);
+                printf("   ");
             }
         }
-        else if ((speler->hp / 3) > i) {
-            printf("%s ", HPBLOCK); //\033[31m
+        printf(" ]\n");
+    }
+
+    printf("DAMAGE:          %d [", speler->damage);
+    for (int i = 0; i < 10; i++)
+    {   
+        if (i < speler->damage){
+            printf(" 🗡 ");
         } else {
-            printf("  ");
+            printf("   ");
         }
     }
-    printf("]\n");
-
-    printf("DAMAGE: [%d]\n", speler->damage);
-    printf("ROOM:   [%d]\n\n", speler->currentRoom->id);
+    printf(" ]\n");
+    printf("CURRENTROOM:       [%d]\n\n", speler->currentRoom->id);
     
     
 }

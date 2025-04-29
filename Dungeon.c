@@ -13,63 +13,83 @@ Room* generateDungeon(int aantalKamers) {
         exit(1);
     }
 
-    // Initieer kamers
     for (int i = 0; i < aantalKamers; i++) {
         kamers[i].id = i;
         kamers[i].neighborCount = 0;
-        kamers[i].neighbors = malloc(4 * sizeof(Room*)); // Maximaal 4 buren
+        kamers[i].neighbors = malloc(4 * sizeof(Room*));
         kamers[i].visited = 0;
         kamers[i].content = EMPTY;
     }
 
-    // Verbind kamers met elkaar
-    for (int i = 0; i < aantalKamers - 1; i++) {
-        // Elke kamer krijgt minstens één verbinding naar de volgende
-        kamers[i].neighbors[kamers[i].neighborCount++] = &kamers[i + 1];
-        kamers[i + 1].neighbors[kamers[i + 1].neighborCount++] = &kamers[i];
+    // Verbonden kamers bijhouden
+    int* verbonden = calloc(aantalKamers, sizeof(int));
+    verbonden[0] = 1;
+    int verbondenCount = 1;
 
-        // Extra verbindingen toevoegen
-        int extraDoors = rand() % 3; // 0, 1 of 2 extra deuren
-        for (int j = 0; j < extraDoors; j++) {
+    // Verbind alle kamers startend van 0
+    for (int i = 1; i < aantalKamers; i++) {
+        int randomIndex = rand() % verbondenCount;
+        Room* bron = &kamers[verbonden[randomIndex]];
+        Room* doel = &kamers[i];
+
+        // Voeg wederzijdse verbinding toe
+        bron->neighbors[bron->neighborCount++] = doel;
+        doel->neighbors[doel->neighborCount++] = bron;
+
+        verbonden[verbondenCount++] = i;
+    }
+
+    // Extra verbindingen toevoegen
+    for (int i = 0; i < aantalKamers; i++) {
+        if (kamers[i].neighborCount >= 4) {
+            continue;
+        }
+        int extra = rand() % 3; // 0–2 extra verbindingen
+        for (int j = 0; j < extra; j++) {
             int target = rand() % aantalKamers;
-            if (target != i && kamers[i].neighborCount < 4 && kamers[target].neighborCount < 4) {
+            if (target != i &&
+                kamers[i].neighborCount < 4 &&
+                kamers[target].neighborCount < 4 &&
+                !alVerbonden(&kamers[i], &kamers[target])) {
+
                 kamers[i].neighbors[kamers[i].neighborCount++] = &kamers[target];
                 kamers[target].neighbors[kamers[target].neighborCount++] = &kamers[i];
             }
         }
     }
 
-    // Inhoud toevoegen (monsters, items, schat)
-    int treasurePlaced = 0;
-    for (int i = 1; i < aantalKamers; i++) { // Startkamer blijft leeg
+    // Inhoud toevoegen
+    for (int i = 1; i < aantalKamers; i++) {
         int roll = rand() % 10;
         if (roll < 3) {
-            // 30% kans op monster
             kamers[i].content = MONSTER;
             kamers[i].details.monster = malloc(sizeof(Monster));
             kamers[i].details.monster->type = rand() % 2 == 0 ? GOBLIN : TROLL;
             kamers[i].details.monster->hp = (kamers[i].details.monster->type == GOBLIN) ? 8 : 20;
             kamers[i].details.monster->damage = (kamers[i].details.monster->type == GOBLIN) ? 2 : 5;
         } else if (roll < 6) {
-            // 30% kans op item
             kamers[i].content = ITEM;
             kamers[i].details.item = malloc(sizeof(Item));
             kamers[i].details.item->type = rand() % 2 == 0 ? HEAL_POTION : DAMAGE_BOOST;
             kamers[i].details.item->value = (kamers[i].details.item->type == HEAL_POTION) ? 5 : 2;
-        } else if (!treasurePlaced) {
-            // 10% kans eerste keer schat
-            kamers[i].content = TREASURE;
-            treasurePlaced = 1;
         }
     }
 
-    // Indien geen schat is geplaatst, forceer het op een random kamer
-    if (!treasurePlaced) {
-        int treasureRoom = (rand() % (aantalKamers - 1)) + 1;
-        kamers[treasureRoom].content = TREASURE;
-    }
+    // Schat in willekeurige kamer (≠ 0)
+    int treasureRoom = (rand() % (aantalKamers - 1)) + 1;
+    kamers[treasureRoom].content = TREASURE;
 
+    free(verbonden);
     return kamers;
+}
+
+int alVerbonden(Room* kamer, Room* target) {
+    for (int i = 0; i < kamer->neighborCount; i++) {
+        if (kamer->neighbors[i] == target) {
+            return 1;
+        }
+    }
+    return 0;
 }
 
 void playGame(Player* speler, int aantalKamers) {
@@ -318,19 +338,28 @@ Player* loadGameJson(Room** kamersOut, int* aantalKamersOut, const char* filenam
 
 void freeDungeon(Room* kamers, int aantalKamers) {
     for (int i = 0; i < aantalKamers; i++) {
-        // Eerst de inhoud van de kamer vrijmaken
-        if (kamers[i].content == MONSTER && kamers[i].details.monster != NULL) {
-            free(kamers[i].details.monster);
-        } else if (kamers[i].content == ITEM && kamers[i].details.item != NULL) {
-            free(kamers[i].details.item);
+        switch (kamers[i].content) {
+            case MONSTER:
+                if (kamers[i].details.monster) {
+                    free(kamers[i].details.monster);
+                }
+                break;
+            case ITEM:
+                if (kamers[i].details.item) {
+                    free(kamers[i].details.item);
+                }
+                break;
+            default:
+                break;
         }
 
-        // Dan de array van neighbor pointers vrijmaken
         if (kamers[i].neighbors != NULL) {
-            free(kamers[i].neighbors);
+            //free(kamers[i].neighbors); ?? programma crasht hier door **?
+            kamers[i].neighbors = NULL;
+        } else {
+            printf("⚠️  Waarschuwing: Kamer %d had geen neighbors pointer!\n", i);
         }
     }
 
-    // En als laatste de kamers zelf
     free(kamers);
 }
