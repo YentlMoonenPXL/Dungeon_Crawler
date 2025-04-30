@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) {
     }
 
 
-    playGame(&speler, aantalKamers);
+    playGame(&speler, dungeon,  aantalKamers);
 
     freeDungeon(dungeon, aantalKamers);
 

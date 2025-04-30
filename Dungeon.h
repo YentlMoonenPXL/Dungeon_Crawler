@@ -37,7 +37,7 @@ typedef struct Player {
 
 // Functiedeclaraties
 Room* generateDungeon(int aantalKamers);
-void playGame(Player* speler, int aantalKamers);
+void playGame(Player* speler, Room* kamers, int aantalKamers);
 void freeDungeon(Room* startRoom, int aantalKamers);
 int alVerbonden(Room* kamer, Room* target);
 

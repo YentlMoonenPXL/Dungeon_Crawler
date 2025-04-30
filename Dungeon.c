@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
 #include <time.h>
 #include "Dungeon.h"
@@ -17,6 +18,7 @@ Room* generateDungeon(int aantalKamers) {
         kamers[i].id = i;
         kamers[i].neighborCount = 0;
         kamers[i].neighbors = malloc(4 * sizeof(Room*));
+        for (int j = 0; j < 4; j++) kamers[i].neighbors[j] = NULL;
         kamers[i].visited = 0;
         kamers[i].content = EMPTY;
     }
@@ -92,7 +94,7 @@ int alVerbonden(Room* kamer, Room* target) {
     return 0;
 }
 
-void playGame(Player* speler, int aantalKamers) {
+void playGame(Player* speler, Room* kamers, int aantalKamers) {
     CLEAR_SCREEN();
     printf("Welkom held! Je start in kamer %d.\n", speler->currentRoom->id);
 
@@ -172,10 +174,18 @@ void playGame(Player* speler, int aantalKamers) {
         }
         printf("\n");
 
-        // Vraag speler welke deur
-        int keuze;
-        printf("Kies een kamer om naar toe te gaan: ");
-        scanf("%d", &keuze);
+        char input[10];
+        printf("Kies een kamer om naar toe te gaan (of typ 's' om op te slaan): ");
+        scanf("%s", input);
+
+        if (strcmp(input, "s") == 0) {
+            saveGameJson(speler, kamers, aantalKamers, "SAVEFILES/savegame.json");
+            printf("✅ Spel opgeslagen. Kies opnieuw.\n");
+            sleep(2);
+            continue; // spring naar volgende iteratie van de loop
+        }
+
+        int keuze = atoi(input); // zet string om naar int
 
         // Controleer of de keuze geldig is
         int geldig = 0;
@@ -216,11 +226,16 @@ void saveGameJson(Player* speler, Room* kamers, int aantalKamers, const char* fi
         fprintf(file, "    {\n");
         fprintf(file, "      \"id\": %d,\n", r->id);
 
-        // Buren
         fprintf(file, "      \"neighbors\": [");
-        for (int j = 0; j < r->neighborCount; j++) {
-            fprintf(file, "%d", r->neighbors[j]->id);
-            if (j != r->neighborCount - 1) fprintf(file, ", ");
+        if (r->neighbors != NULL) {
+            int printed = 0;
+            for (int j = 0; j < r->neighborCount; j++) {
+                if (r->neighbors[j] != NULL) {
+                    if (printed > 0) fprintf(file, ", ");
+                    fprintf(file, "%d", r->neighbors[j]->id);
+                    printed++;
+                }
+            }
         }
         fprintf(file, "],\n");
 
