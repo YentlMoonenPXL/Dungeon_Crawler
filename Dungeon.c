@@ -25,27 +25,28 @@ Room* generateDungeon(int aantalKamers) {
 
     // Verbonden kamers bijhouden
     int* verbonden = calloc(aantalKamers, sizeof(int));
-    verbonden[0] = 1;
+    verbonden[0] = 0;
     int verbondenCount = 1;
 
     // Verbind alle kamers startend van 0
     for (int i = 1; i < aantalKamers; i++) {
-        int randomIndex = rand() % verbondenCount;
-        Room* bron = &kamers[verbonden[randomIndex]];
-        Room* doel = &kamers[i];
+        int bronIndex = rand() % verbondenCount;
+        int bronID = verbonden[bronIndex];
 
-        // Voeg wederzijdse verbinding toe
-        bron->neighbors[bron->neighborCount++] = doel;
-        doel->neighbors[doel->neighborCount++] = bron;
+        if (
+            kamers[i].neighborCount < 4 &&
+            kamers[bronID].neighborCount < 4 &&
+            !alVerbonden(&kamers[i], &kamers[bronID])
+        ) {
+            kamers[i].neighbors[kamers[i].neighborCount++] = &kamers[bronID];
+            kamers[bronID].neighbors[kamers[bronID].neighborCount++] = &kamers[i];
+        }
 
         verbonden[verbondenCount++] = i;
     }
 
     // Extra verbindingen toevoegen
     for (int i = 0; i < aantalKamers; i++) {
-        if (kamers[i].neighborCount >= 4) {
-            continue;
-        }
         int extra = rand() % 3; // 0–2 extra verbindingen
         for (int j = 0; j < extra; j++) {
             int target = rand() % aantalKamers;
@@ -53,7 +54,6 @@ Room* generateDungeon(int aantalKamers) {
                 kamers[i].neighborCount < 4 &&
                 kamers[target].neighborCount < 4 &&
                 !alVerbonden(&kamers[i], &kamers[target])) {
-
                 kamers[i].neighbors[kamers[i].neighborCount++] = &kamers[target];
                 kamers[target].neighbors[kamers[target].neighborCount++] = &kamers[i];
             }
@@ -101,7 +101,7 @@ void playGame(Player* speler, Room* kamers, int aantalKamers) {
     while (1) {
         Room* current = speler->currentRoom;
 
-        PRINTSTATS(speler);
+        PRINTSTATS(speler, kamers, aantalKamers);
 
         printf("\nJe bent in kamer %d.\n", current->id);
 
@@ -227,15 +227,9 @@ void saveGameJson(Player* speler, Room* kamers, int aantalKamers, const char* fi
         fprintf(file, "      \"id\": %d,\n", r->id);
 
         fprintf(file, "      \"neighbors\": [");
-        if (r->neighbors != NULL) {
-            int printed = 0;
-            for (int j = 0; j < r->neighborCount; j++) {
-                if (r->neighbors[j] != NULL) {
-                    if (printed > 0) fprintf(file, ", ");
-                    fprintf(file, "%d", r->neighbors[j]->id);
-                    printed++;
-                }
-            }
+        for (int j = 0; j < r->neighborCount; j++) {
+            fprintf(file, "%d", r->neighbors[j]->id);
+            if (j != r->neighborCount - 1) fprintf(file, ", ");
         }
         fprintf(file, "],\n");
 
@@ -277,23 +271,35 @@ Player* loadGameJson(Room** kamersOut, int* aantalKamersOut, const char* filenam
     }
 
     Player* speler = malloc(sizeof(Player));
-    int kamerTeller = 0;
-    int maxKamers = 100;
+    int maxKamers = 50;
     Room* kamers = malloc(maxKamers * sizeof(Room));
-
     Room* currentRoom = NULL;
-    char line[512];
+    int laatstGelezenID = -1;
+    int currentRoomId = -1;
+
+    int inMonster = 0;
+    int inItem = 0;
+
+    char line[100];
 
     while (fgets(line, sizeof(line), file)) {
         if (strstr(line, "\"hp\":")) {
-            sscanf(line, " %*[^0-9]%d", &speler->hp);
+            if (!inMonster) {
+                sscanf(line, " %*[^0-9]%d", &speler->hp);
+            } else {
+                sscanf(line, " %*[^0-9]%d", &currentRoom->details.monster->hp);
+            }
         } else if (strstr(line, "\"damage\":")) {
-            sscanf(line, " %*[^0-9]%d", &speler->damage);
+            if (!inMonster) {
+                sscanf(line, " %*[^0-9]%d", &speler->damage);
+            } else {
+                sscanf(line, " %*[^0-9]%d", &currentRoom->details.monster->damage);
+            }
         } else if (strstr(line, "\"currentRoom\":")) {
-            int id;
-            sscanf(line, " %*[^0-9]%d", &id);
-            speler->currentRoom = &kamers[id];
+            sscanf(line, " %*[^0-9]%d", &currentRoomId);
         } else if (strstr(line, "\"id\":")) {
+            inMonster = 0;
+            inItem = 0;
             int id;
             sscanf(line, " %*[^0-9]%d", &id);
             kamers[id].id = id;
@@ -301,27 +307,33 @@ Player* loadGameJson(Room** kamersOut, int* aantalKamersOut, const char* filenam
             kamers[id].neighbors = malloc(4 * sizeof(Room*));
             kamers[id].content = EMPTY;
             kamers[id].visited = 0;
-            kamerTeller++;
             currentRoom = &kamers[id];
+            if (id > laatstGelezenID) laatstGelezenID = id;
         } else if (strstr(line, "\"neighbors\":")) {
             char* ptr = strchr(line, '[') + 1;
-            while (*ptr != ']') {
+            while (ptr && *ptr && *ptr != ']') {
                 int neighborID;
-                sscanf(ptr, "%d", &neighborID);
-                currentRoom->neighbors[currentRoom->neighborCount++] = &kamers[neighborID];
+                if (sscanf(ptr, "%d", &neighborID) == 1) {
+                    currentRoom->neighbors[currentRoom->neighborCount++] = &kamers[neighborID];
+                }
                 while (*ptr && *ptr != ',' && *ptr != ']') ptr++;
                 if (*ptr == ',') ptr++;
             }
         } else if (strstr(line, "\"content\":")) {
+            inMonster = inItem = 0;
             if (strstr(line, "EMPTY")) currentRoom->content = EMPTY;
-            else if (strstr(line, "MONSTER")) currentRoom->content = MONSTER;
-            else if (strstr(line, "ITEM")) currentRoom->content = ITEM;
+            else if (strstr(line, "MONSTER")) {
+                currentRoom->content = MONSTER;
+                currentRoom->details.monster = malloc(sizeof(Monster));
+                inMonster = 1;
+            }
+            else if (strstr(line, "ITEM")) {
+                currentRoom->content = ITEM;
+                currentRoom->details.item = malloc(sizeof(Item));
+                inItem = 1;
+            }
             else if (strstr(line, "TREASURE")) currentRoom->content = TREASURE;
-        } else if (strstr(line, "\"monster\":")) {
-            currentRoom->details.monster = malloc(sizeof(Monster));
-        } else if (strstr(line, "\"item\":")) {
-            currentRoom->details.item = malloc(sizeof(Item));
-        } else if (currentRoom && currentRoom->content == MONSTER) {
+        } else if (inMonster && currentRoom && currentRoom->details.monster) {
             if (strstr(line, "\"type\":")) {
                 if (strstr(line, "GOBLIN")) currentRoom->details.monster->type = GOBLIN;
                 else currentRoom->details.monster->type = TROLL;
@@ -330,7 +342,7 @@ Player* loadGameJson(Room** kamersOut, int* aantalKamersOut, const char* filenam
             } else if (strstr(line, "\"damage\":")) {
                 sscanf(line, " %*[^0-9]%d", &currentRoom->details.monster->damage);
             }
-        } else if (currentRoom && currentRoom->content == ITEM) {
+        } else if (inItem && currentRoom && currentRoom->details.item) {
             if (strstr(line, "\"type\":")) {
                 if (strstr(line, "HEAL_POTION")) currentRoom->details.item->type = HEAL_POTION;
                 else currentRoom->details.item->type = DAMAGE_BOOST;
@@ -344,10 +356,13 @@ Player* loadGameJson(Room** kamersOut, int* aantalKamersOut, const char* filenam
 
     fclose(file);
 
+    speler->currentRoom = &kamers[currentRoomId];
     *kamersOut = kamers;
-    *aantalKamersOut = kamerTeller;
+    *aantalKamersOut = laatstGelezenID + 1;
 
-    printf("Spel succesvol geladen uit JSON.\n");
+    CLEAR_SCREEN();
+    printf("✅ Spel succesvol geladen uit %s.\n", filename);
+    sleep(2);
     return speler;
 }
 
@@ -367,14 +382,7 @@ void freeDungeon(Room* kamers, int aantalKamers) {
             default:
                 break;
         }
-
-        if (kamers[i].neighbors != NULL) {
-            //free(kamers[i].neighbors); ?? programma crasht hier door **?
-            kamers[i].neighbors = NULL;
-        } else {
-            printf("⚠️  Waarschuwing: Kamer %d had geen neighbors pointer!\n", i);
-        }
     }
-
+    
     free(kamers);
 }

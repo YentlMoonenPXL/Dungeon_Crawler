@@ -8,6 +8,7 @@
 int main(int argc, char* argv[]) {
 
     Player speler;
+    Player* loadSpeler;
     Room* dungeon;
     int aantalKamers;
     char again, save, load;
@@ -62,11 +63,10 @@ int main(int argc, char* argv[]) {
                 }
             }
             else if (strcmp(buffer, "2") == 0) {
-                loadGameJson(&dungeon, &aantalKamers, "SAVEFILES/savegame.json");
+                loadSpeler = loadGameJson(&dungeon, &aantalKamers, "SAVEFILES/savegame.json");
                 load = true;
                 break;
             } else if (strcmp(buffer, "3") == 0) {
-                freeDungeon(dungeon, aantalKamers);
                 exit(0);
             } else {
                 if (forward) {
@@ -83,16 +83,16 @@ int main(int argc, char* argv[]) {
 
     if (load) {
         !load;
+        playGame(loadSpeler, dungeon, aantalKamers);
     } else {
         dungeon = generateDungeon(aantalKamers);
 
         speler.hp = 30;
         speler.damage = 5;
         speler.currentRoom = &dungeon[0];
+
+        playGame(&speler, dungeon, aantalKamers);
     }
-
-
-    playGame(&speler, dungeon,  aantalKamers);
 
     freeDungeon(dungeon, aantalKamers);
 

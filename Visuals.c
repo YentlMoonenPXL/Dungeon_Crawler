@@ -28,8 +28,9 @@ void PRINTHOME() {
     printf("                                                ~by Yentl Moonen");
 }
 
-void PRINTSTATS(Player* speler) {
+void PRINTSTATS(Player* speler, Room* kamers, int aantalKamers) {
     CLEAR_SCREEN();
+    //HP
     if (speler->hp == 0) {
         printf("\nHP:     \033[31m0\x1b[0m/30 [ ☠ ☠ ☠ ☠ ☠ ☠ ☠ ☠ ☠ ☠ ]", speler->hp);
     }
@@ -43,7 +44,11 @@ void PRINTSTATS(Player* speler) {
         for (int i = 0; i < 10; i++)
         {   
             if ((speler->hp / 3) > i) {
-                printf("\033[31m ❤ \x1b[0m");
+                if ((speler->hp / 3) - 10 > i) {
+                    printf("\033[33m ❤ \x1b[0m");
+                } else {
+                    printf("\033[31m ❤ \x1b[0m");
+                }
             } else {
                 printf("   ");
             }
@@ -51,6 +56,7 @@ void PRINTSTATS(Player* speler) {
         printf(" ]\n");
     }
 
+    //DAMAGE
     printf("DAMAGE:          %d [", speler->damage);
     for (int i = 0; i < 10; i++)
     {   
@@ -61,7 +67,13 @@ void PRINTSTATS(Player* speler) {
         }
     }
     printf(" ]\n");
-    printf("CURRENTROOM:       [%d]\n\n", speler->currentRoom->id);
-    
-    
+
+    //ROOMS
+    printf("CLEARED:           [ ");
+    for (int i = 0; i < aantalKamers; i++) {
+        if (kamers[i].visited) {
+            printf("\033[32m%d\x1b[0m, ", kamers[i].id);
+        }
+    }
+    printf("]\n\n                            ---ROOM  %d---\n\n", speler->currentRoom->id);
 }
