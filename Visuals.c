@@ -7,13 +7,13 @@
 void PRINTINTRO() {
     CLEAR_SCREEN();
     sleep(1);
-    printf("\n\n\n\n                      \033[90mA 1Fps Production\x1b[0m");
+    printf("\n\n\n\n                      \033[90mYentl's 1Fps Production\x1b[0m");
     sleep(1);
     CLEAR_SCREEN();
-    printf("\n\n\n\n                      A 1Fps Production");
+    printf("\n\n\n\n                      Yentl's 1Fps Production");
     sleep(2);
     CLEAR_SCREEN();
-    printf("\n\n\n\n                      \033[90mA 1Fps Production\x1b[0m");
+    printf("\n\n\n\n                      \033[90mYentl's 1Fps Production\x1b[0m");
     sleep(1);
     CLEAR_SCREEN();
     sleep(1);
