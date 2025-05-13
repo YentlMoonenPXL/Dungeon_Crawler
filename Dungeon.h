@@ -43,7 +43,7 @@ typedef struct Player {
 // Dungeonbeheer
 Room* generateDungeon(int aantalKamers);
 void playGame(Player* speler, Room* kamers, int aantalKamers);
-void freeDungeon(Room* startRoom, int aantalKamers);
+void freeDungeon(Room* startRoom, int aantalKamers, Player* loadspeler);
 int alVerbonden(Room* kamer, Room* target);
 
 // Opslaan & Laden
@@ -54,5 +54,7 @@ Player* loadGameJson(Room** kamersOut, int* aantalKamersOut, const char* filenam
 void PRINTINTRO();
 void PRINTHOME();
 void PRINTSTATS(Player* speler, Room* kamers, int aantalKamers);
+void PRINTMONSTER(Monster* monster);
+void PRINTTREASURE();
 
 #endif

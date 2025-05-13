@@ -2,40 +2,46 @@
   "player": {
     "hp": 30,
     "damage": 5,
-    "currentRoom": 0
+    "currentRoom": 3
   },
   "rooms": [
     {
       "id": 0,
-      "neighbors": [1, 2, 5, 24],
+      "neighbors": [1, 2, 3, 4],
       "content": "EMPTY",
       "visited": 1
     },
     {
       "id": 1,
-      "neighbors": [0, 3, 6, 11],
-      "content": "MONSTER",
-      "monster": {
-        "type": "GOBLIN",
-        "hp": 8,
-        "damage": 2
-      },
-      "visited": 0
-    },
-    {
-      "id": 2,
-      "neighbors": [0, 9, 16, 31],
+      "neighbors": [0, 5, 4, 7],
       "content": "MONSTER",
       "monster": {
         "type": "TROLL",
-        "hp": 20,
+        "hp": 21,
         "damage": 5
       },
       "visited": 0
     },
     {
+      "id": 2,
+      "neighbors": [0, 15, 16, 23],
+      "content": "MONSTER",
+      "monster": {
+        "type": "GOBLIN",
+        "hp": 9,
+        "damage": 3
+      },
+      "visited": 0
+    },
+    {
       "id": 3,
-      "neighbors": [1, 4, 7, 20],
+      "neighbors": [0, 11, 17, 19],
+      "content": "EMPTY",
+      "visited": 1
+    },
+    {
+      "id": 4,
+      "neighbors": [0, 8, 12, 1],
       "content": "ITEM",
       "item": {
         "type": "HEAL_POTION",
@@ -44,122 +50,96 @@
       "visited": 0
     },
     {
-      "id": 4,
-      "neighbors": [3, 16, 17, 19],
-      "content": "EMPTY",
-      "visited": 0
-    },
-    {
       "id": 5,
-      "neighbors": [0, 8, 18, 23],
-      "content": "MONSTER",
-      "monster": {
-        "type": "GOBLIN",
-        "hp": 8,
-        "damage": 2
+      "neighbors": [1, 6, 9, 10],
+      "content": "ITEM",
+      "item": {
+        "type": "DAMAGE_BOOST",
+        "value": 2
       },
       "visited": 0
     },
     {
       "id": 6,
-      "neighbors": [1, 47],
-      "content": "ITEM",
-      "item": {
-        "type": "DAMAGE_BOOST",
-        "value": 2
-      },
+      "neighbors": [5, 24],
+      "content": "EMPTY",
       "visited": 0
     },
     {
       "id": 7,
-      "neighbors": [3, 23, 29],
-      "content": "MONSTER",
-      "monster": {
-        "type": "GOBLIN",
-        "hp": 8,
-        "damage": 2
-      },
+      "neighbors": [14, 1, 15, 20],
+      "content": "EMPTY",
       "visited": 0
     },
     {
       "id": 8,
-      "neighbors": [5, 21, 42],
-      "content": "MONSTER",
-      "monster": {
-        "type": "GOBLIN",
-        "hp": 8,
-        "damage": 2
-      },
+      "neighbors": [4, 13, 24, 10],
+      "content": "EMPTY",
       "visited": 0
     },
     {
       "id": 9,
-      "neighbors": [2, 10, 22],
-      "content": "MONSTER",
-      "monster": {
-        "type": "GOBLIN",
-        "hp": 8,
-        "damage": 2
-      },
+      "neighbors": [5],
+      "content": "EMPTY",
       "visited": 0
     },
     {
       "id": 10,
-      "neighbors": [9, 14, 39, 43],
-      "content": "TREASURE",
+      "neighbors": [5, 8, 14, 20],
+      "content": "MONSTER",
+      "monster": {
+        "type": "GOBLIN",
+        "hp": 9,
+        "damage": 3
+      },
       "visited": 0
     },
     {
       "id": 11,
-      "neighbors": [1, 12, 13, 49],
+      "neighbors": [3, 18, 23],
       "content": "EMPTY",
       "visited": 0
     },
     {
       "id": 12,
-      "neighbors": [11, 14, 44, 40],
-      "content": "MONSTER",
-      "monster": {
-        "type": "GOBLIN",
-        "hp": 8,
-        "damage": 2
+      "neighbors": [4, 21, 23],
+      "content": "ITEM",
+      "item": {
+        "type": "HEAL_POTION",
+        "value": 5
       },
       "visited": 0
     },
     {
       "id": 13,
-      "neighbors": [11, 15, 41, 28],
-      "content": "ITEM",
-      "item": {
-        "type": "DAMAGE_BOOST",
-        "value": 2
-      },
+      "neighbors": [8, 15],
+      "content": "EMPTY",
       "visited": 0
     },
     {
       "id": 14,
-      "neighbors": [12, 22, 36, 10],
-      "content": "ITEM",
-      "item": {
-        "type": "DAMAGE_BOOST",
-        "value": 2
+      "neighbors": [7, 10, 22, 24],
+      "content": "MONSTER",
+      "monster": {
+        "type": "GOBLIN",
+        "hp": 9,
+        "damage": 3
       },
       "visited": 0
     },
     {
       "id": 15,
-      "neighbors": [13, 40, 45, 39],
-      "content": "MONSTER",
-      "monster": {
-        "type": "TROLL",
-        "hp": 20,
-        "damage": 5
+      "neighbors": [2, 13, 24, 7],
+      "content": "ITEM",
+      "item": {
+        "type": "HEAL_POTION",
+        "value": 5
       },
       "visited": 0
     },
     {
       "id": 16,
-      "neighbors": [4, 26, 30, 2],
+      "neighbors": [2],
       "content": "ITEM",
       "item": {
         "type": "DAMAGE_BOOST",
@@ -169,7 +149,7 @@
     },
     {
       "id": 17,
-      "neighbors": [4, 31, 35, 19],
+      "neighbors": [3],
       "content": "ITEM",
       "item": {
         "type": "DAMAGE_BOOST",
@@ -179,35 +159,34 @@
     },
     {
       "id": 18,
-      "neighbors": [5, 28],
+      "neighbors": [11],
       "content": "MONSTER",
       "monster": {
         "type": "GOBLIN",
-        "hp": 8,
-        "damage": 2
+        "hp": 9,
+        "damage": 3
       },
       "visited": 0
     },
     {
       "id": 19,
-      "neighbors": [4, 17],
-      "content": "MONSTER",
-      "monster": {
-        "type": "TROLL",
-        "hp": 20,
-        "damage": 5
-      },
+      "neighbors": [3],
+      "content": "TREASURE",
       "visited": 0
     },
     {
       "id": 20,
-      "neighbors": [3, 29, 21],
-      "content": "EMPTY",
+      "neighbors": [7, 10],
+      "content": "ITEM",
+      "item": {
+        "type": "HEAL_POTION",
+        "value": 5
+      },
       "visited": 0
     },
     {
       "id": 21,
-      "neighbors": [8, 20, 40],
+      "neighbors": [12, 22],
       "content": "ITEM",
       "item": {
         "type": "HEAL_POTION",
@@ -217,235 +196,30 @@
     },
     {
       "id": 22,
-      "neighbors": [14, 9, 30],
-      "content": "ITEM",
-      "item": {
-        "type": "HEAL_POTION",
-        "value": 5
+      "neighbors": [21, 14],
+      "content": "MONSTER",
+      "monster": {
+        "type": "TROLL",
+        "hp": 21,
+        "damage": 5
       },
       "visited": 0
     },
     {
       "id": 23,
-      "neighbors": [7, 27, 5],
-      "content": "EMPTY",
+      "neighbors": [11, 2, 12],
+      "content": "MONSTER",
+      "monster": {
+        "type": "GOBLIN",
+        "hp": 9,
+        "damage": 3
+      },
       "visited": 0
     },
     {
       "id": 24,
-      "neighbors": [0, 37, 36, 47],
-      "content": "ITEM",
-      "item": {
-        "type": "DAMAGE_BOOST",
-        "value": 2
-      },
-      "visited": 0
-    },
-    {
-      "id": 25,
-      "neighbors": [],
+      "neighbors": [8, 15, 14, 6],
       "content": "EMPTY",
-      "visited": 0
-    },
-    {
-      "id": 26,
-      "neighbors": [16, 32, 43, 33],
-      "content": "MONSTER",
-      "monster": {
-        "type": "GOBLIN",
-        "hp": 8,
-        "damage": 2
-      },
-      "visited": 0
-    },
-    {
-      "id": 27,
-      "neighbors": [23],
-      "content": "EMPTY",
-      "visited": 0
-    },
-    {
-      "id": 28,
-      "neighbors": [18, 33, 13],
-      "content": "EMPTY",
-      "visited": 0
-    },
-    {
-      "id": 29,
-      "neighbors": [20, 7],
-      "content": "ITEM",
-      "item": {
-        "type": "HEAL_POTION",
-        "value": 5
-      },
-      "visited": 0
-    },
-    {
-      "id": 30,
-      "neighbors": [16, 22],
-      "content": "ITEM",
-      "item": {
-        "type": "HEAL_POTION",
-        "value": 5
-      },
-      "visited": 0
-    },
-    {
-      "id": 31,
-      "neighbors": [17, 49, 2],
-      "content": "EMPTY",
-      "visited": 0
-    },
-    {
-      "id": 32,
-      "neighbors": [26, 34, 48, 43],
-      "content": "EMPTY",
-      "visited": 0
-    },
-    {
-      "id": 33,
-      "neighbors": [28, 26, 34],
-      "content": "ITEM",
-      "item": {
-        "type": "DAMAGE_BOOST",
-        "value": 2
-      },
-      "visited": 0
-    },
-    {
-      "id": 34,
-      "neighbors": [32, 35, 33, 36],
-      "content": "EMPTY",
-      "visited": 0
-    },
-    {
-      "id": 35,
-      "neighbors": [34, 17],
-      "content": "ITEM",
-      "item": {
-        "type": "HEAL_POTION",
-        "value": 5
-      },
-      "visited": 0
-    },
-    {
-      "id": 36,
-      "neighbors": [14, 24, 34, 39],
-      "content": "MONSTER",
-      "monster": {
-        "type": "GOBLIN",
-        "hp": 8,
-        "damage": 2
-      },
-      "visited": 0
-    },
-    {
-      "id": 37,
-      "neighbors": [24, 38],
-      "content": "EMPTY",
-      "visited": 0
-    },
-    {
-      "id": 38,
-      "neighbors": [37, 39],
-      "content": "ITEM",
-      "item": {
-        "type": "HEAL_POTION",
-        "value": 5
-      },
-      "visited": 0
-    },
-    {
-      "id": 39,
-      "neighbors": [10, 15, 36, 38],
-      "content": "EMPTY",
-      "visited": 0
-    },
-    {
-      "id": 40,
-      "neighbors": [15, 21, 12],
-      "content": "ITEM",
-      "item": {
-        "type": "HEAL_POTION",
-        "value": 5
-      },
-      "visited": 0
-    },
-    {
-      "id": 41,
-      "neighbors": [13],
-      "content": "ITEM",
-      "item": {
-        "type": "HEAL_POTION",
-        "value": 5
-      },
-      "visited": 0
-    },
-    {
-      "id": 42,
-      "neighbors": [8, 49],
-      "content": "MONSTER",
-      "monster": {
-        "type": "TROLL",
-        "hp": 20,
-        "damage": 5
-      },
-      "visited": 0
-    },
-    {
-      "id": 43,
-      "neighbors": [26, 32, 10],
-      "content": "MONSTER",
-      "monster": {
-        "type": "TROLL",
-        "hp": 20,
-        "damage": 5
-      },
-      "visited": 0
-    },
-    {
-      "id": 44,
-      "neighbors": [12],
-      "content": "ITEM",
-      "item": {
-        "type": "HEAL_POTION",
-        "value": 5
-      },
-      "visited": 0
-    },
-    {
-      "id": 45,
-      "neighbors": [15],
-      "content": "EMPTY",
-      "visited": 0
-    },
-    {
-      "id": 46,
-      "neighbors": [47],
-      "content": "EMPTY",
-      "visited": 0
-    },
-    {
-      "id": 47,
-      "neighbors": [6, 46, 24],
-      "content": "EMPTY",
-      "visited": 0
-    },
-    {
-      "id": 48,
-      "neighbors": [32],
-      "content": "EMPTY",
-      "visited": 0
-    },
-    {
-      "id": 49,
-      "neighbors": [11, 31, 42],
-      "content": "MONSTER",
-      "monster": {
-        "type": "GOBLIN",
-        "hp": 8,
-        "damage": 2
-      },
       "visited": 0
     }
   ]

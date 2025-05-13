@@ -77,7 +77,7 @@ int main(int argc, char* argv[]) {
                 }
             }
         }
-
+        
         if (load) {
             playGame(loadSpeler, dungeon, aantalKamers);
         } else {
@@ -95,7 +95,7 @@ int main(int argc, char* argv[]) {
         int c;
         while ((c = getchar()) != '\n' && c != EOF); //clear input buffer
 
-        freeDungeon(dungeon, aantalKamers);
+        freeDungeon(dungeon, aantalKamers, loadSpeler);
         dungeon = NULL;
         loadSpeler = NULL;
 
