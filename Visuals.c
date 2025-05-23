@@ -32,7 +32,7 @@ void PRINTSTATS(Player* speler, Room* kamers, int aantalKamers) {
     CLEAR_SCREEN();
     //HP
     if (speler->hp <= 0) {
-        printf("\nHP:        \033[31m0\x1b[0m/30 [ ☠  ☠  ☠  ☠  ☠  ☠  ☠  ☠  ☠  ☠ ]\n", speler->hp);
+        printf("\nHP:           \033[31m0\x1b[0m/30 [ ☠  ☠  ☠  ☠  ☠  ☠  ☠  ☠  ☠  ☠  ]\n", speler->hp);
     }
     else {
         printf("\nHP:          %d/30 ", speler->hp);

@@ -95,9 +95,6 @@ int alVerbonden(Room* kamer, Room* target) {
 }
 
 void playGame(Player* speler, Room* kamers, int aantalKamers) {
-    CLEAR_SCREEN();
-    printf("Welkom held! Je start in kamer %d.\n", speler->currentRoom->id);
-
     while (1) {
         Room* current = speler->currentRoom;
 
@@ -131,7 +128,6 @@ void playGame(Player* speler, Room* kamers, int aantalKamers) {
                             printf(" (Speler doet %d damage) \n", speler->damage);
                         }
                     }
-                    printf("\n");
                     sleep(3);
                     CLEAR_SCREEN();
                     PRINTSTATS(speler, kamers, aantalKamers);

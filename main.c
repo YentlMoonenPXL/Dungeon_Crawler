@@ -13,6 +13,36 @@ int main(int argc, char* argv[]) {
     char again, save;
     bool load = false, back = false, forward = false;
 
+    if (argc == 2) { //als er een argument (nummer of savefile) mee gegeven wordt met ./main.exe
+        // In powershell terminal voer eerst "[Console]::OutputEncoding = [System.Text.UTF8Encoding]::UTF8" uit
+        int mogelijkAantal = atoi(argv[1]);
+
+        if (mogelijkAantal > 0) {
+            // Genereer nieuwe dungeon met gegeven aantal kamers
+            aantalKamers = mogelijkAantal;
+            dungeon = generateDungeon(aantalKamers);
+
+            speler.hp = 30;
+            speler.damage = 5;
+            speler.currentRoom = &dungeon[0];
+
+            playGame(&speler, dungeon, aantalKamers);
+            freeDungeon(dungeon, aantalKamers, NULL);
+            return 0;
+        } else {
+            // Probeer te laden als savebestand
+            loadSpeler = loadGameJson(&dungeon, &aantalKamers, argv[1]);
+            if (loadSpeler != NULL) {
+                playGame(loadSpeler, dungeon, aantalKamers);
+                freeDungeon(dungeon, aantalKamers, loadSpeler);
+                return 0;
+            } else {
+                printf("❌ Kon bestand \"%s\" niet laden.\n\n", argv[1]);
+                return 1;
+            }
+        }
+    }
+
     do //lus voor terug naar home te gaan of spel af te sluiten na het einde van een run.
     {    
         forward = false;
@@ -96,8 +126,6 @@ int main(int argc, char* argv[]) {
         while ((c = getchar()) != '\n' && c != EOF); //clear input buffer
 
         freeDungeon(dungeon, aantalKamers, loadSpeler);
-        dungeon = NULL;
-        loadSpeler = NULL;
 
     } while (again == 'y' || again == 'Y');
 
