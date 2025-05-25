@@ -109,7 +109,6 @@ void playGame(Player* speler, Room* kamers, int aantalKamers) {
                 Monster* monster = current->details.monster;
                 while (monster->hp > 0 && speler->hp > 0) {
                     sleep(2);
-                    CLEAR_SCREEN();
                     PRINTSTATS(speler, kamers, aantalKamers);
                     PRINTMONSTER(current->details.monster);
                     int aanval = rand() % 16; // Random getal tussen 0-15
@@ -129,7 +128,6 @@ void playGame(Player* speler, Room* kamers, int aantalKamers) {
                         }
                     }
                     sleep(3);
-                    CLEAR_SCREEN();
                     PRINTSTATS(speler, kamers, aantalKamers);
                     PRINTMONSTER(current->details.monster);
 
