@@ -17,7 +17,7 @@ Room* generateDungeon(int aantalKamers) {
     for (int i = 0; i < aantalKamers; i++) {
         kamers[i].id = i;
         kamers[i].neighborCount = 0;
-        kamers[i].neighbors = malloc(4 * sizeof(Room*));
+        kamers[i].neighbors = calloc(4, sizeof(Room*));
         for (int j = 0; j < 4; j++) kamers[i].neighbors[j] = NULL;
         kamers[i].visited = 0;
         kamers[i].content = EMPTY;
@@ -53,7 +53,8 @@ Room* generateDungeon(int aantalKamers) {
             if (target != i &&
                 kamers[i].neighborCount < 4 &&
                 kamers[target].neighborCount < 4 &&
-                !alVerbonden(&kamers[i], &kamers[target])) {
+                !alVerbonden(&kamers[i], &kamers[target])
+            ) {
                 kamers[i].neighbors[kamers[i].neighborCount++] = &kamers[target];
                 kamers[target].neighbors[kamers[target].neighborCount++] = &kamers[i];
             }
@@ -66,14 +67,16 @@ Room* generateDungeon(int aantalKamers) {
         if (roll < 3) {
             kamers[i].content = MONSTER;
             kamers[i].details.monster = malloc(sizeof(Monster));
-            kamers[i].details.monster->type = rand() % 2 == 0 ? GOBLIN : TROLL;
-            kamers[i].details.monster->hp = (kamers[i].details.monster->type == GOBLIN) ? 9 : 21;
-            kamers[i].details.monster->damage = (kamers[i].details.monster->type == GOBLIN) ? 3 : 5;
+            Monster* m = kamers[i].details.monster;
+            m->type = rand() % 2 == 0 ? GOBLIN : TROLL;
+            m->hp = (m->type == GOBLIN) ? 9 : 21;
+            m->damage = (m->type == GOBLIN) ? 3 : 5;
         } else if (roll < 6) {
             kamers[i].content = ITEM;
             kamers[i].details.item = malloc(sizeof(Item));
-            kamers[i].details.item->type = rand() % 2 == 0 ? HEAL_POTION : DAMAGE_BOOST;
-            kamers[i].details.item->value = (kamers[i].details.item->type == HEAL_POTION) ? 5 : 2;
+            Item* item = kamers[i].details.item;
+            item->type = rand() % 2 == 0 ? HEAL_POTION : DAMAGE_BOOST;
+            item->value = (item->type == HEAL_POTION) ? 5 : 2;
         }
     }
 
@@ -97,71 +100,86 @@ int alVerbonden(Room* kamer, Room* target) {
 void playGame(Player* speler, Room* kamers, int aantalKamers) {
     while (1) {
         Room* current = speler->currentRoom;
-
         PRINTSTATS(speler, kamers, aantalKamers);
 
-        // Als de kamer nog niet bezocht is, verwerk inhoud
+        // Verwerk kamerinhoud bij eerste bezoek
         if (!current->visited) {
             current->visited = 1;
 
-            if (current->content == MONSTER) {
-                PRINTMONSTER(current->details.monster);                
-                Monster* monster = current->details.monster;
-                while (monster->hp > 0 && speler->hp > 0) {
-                    sleep(2);
-                    PRINTSTATS(speler, kamers, aantalKamers);
-                    PRINTMONSTER(current->details.monster);
-                    int aanval = rand() % 16; // Random getal tussen 0-15
-                    printf("je valt aan! Aanval volgorde: \n");
-                    for (int i = 3; i >= 0; i--) {
-                        sleep(1);
-                        int bit = (aanval >> i) & 1;
-                        printf("%d", bit);
-                        if (bit == 0) {
-                            // Monster valt speler aan
-                            speler->hp -= monster->damage;
-                            printf(" (Monster doet %d damage) \n", monster->damage);
-                        } else {
-                            // Speler valt monster aan
-                            monster->hp -= speler->damage;
-                            printf(" (Speler doet %d damage) \n", speler->damage);
+            switch (current->content) {
+                case MONSTER: {
+                    Monster* monster = current->details.monster;
+                    PRINTMONSTER(monster);
+
+                    while (monster->hp > 0 && speler->hp > 0) {
+                        sleep(2);
+                        PRINTSTATS(speler, kamers, aantalKamers);
+                        PRINTMONSTER(monster);
+
+                        int aanval = rand() % 16;
+                        printf("Je valt aan! Aanval volgorde:\n");
+
+                        for (int i = 3; i >= 0; i--) {
+                            sleep(1);
+                            int bit = (aanval >> i) & 1;
+                            printf("%d", bit);
+
+                            if (bit == 0) {
+                                speler->hp -= monster->damage;
+                                printf(" (Monster doet %d damage)\n", monster->damage);
+                            } else {
+                                monster->hp -= speler->damage;
+                                printf(" (Speler doet %d damage)\n", speler->damage);
+                            }
                         }
+
+                        sleep(3);
+                        PRINTSTATS(speler, kamers, aantalKamers);
+                        PRINTMONSTER(monster);
                     }
-                    sleep(3);
-                    PRINTSTATS(speler, kamers, aantalKamers);
-                    PRINTMONSTER(current->details.monster);
 
                     if (speler->hp <= 0) {
-                        printf("\nJe bent gestorven...\n");
+                        printf("\nJe bent gestorven...\n\n");
                         return;
-                    } else if (monster->hp <= 0) {
-                        printf("\nJe hebt het monster verslagen!\n");
-                        free(current->details.monster);
+                    }
+
+                    if (monster->hp <= 0) {
+                        printf("\nJe hebt het monster verslagen!\n\n");
+                        free(monster);
                         current->content = EMPTY;
                     }
+                    break;
                 }
-            } else if (current->content == ITEM) {
-                Item* item = current->details.item;
-                printf("Je vindt een item: ");
 
-                if (item->type == HEAL_POTION) {
-                    printf("Heal Potion! (+%d HP)\n", item->value);
-                    speler->hp += item->value;
-                } else if (item->type == DAMAGE_BOOST) {
-                    printf("Damage Boost! (+%d Damage)\n", item->value);
-                    speler->damage += item->value;
+                case ITEM: {
+                    Item* item = current->details.item;
+                    printf("🎁 Je vindt een item: ");
+
+                    if (item->type == HEAL_POTION) {
+                        printf("Heal Potion! (+%d HP)\n\n", item->value);
+                        speler->hp += item->value;
+                    } else {
+                        printf("Damage Boost! (+%d Damage)\n\n", item->value);
+                        speler->damage += item->value;
+                    }
+
+                    free(item);
+                    current->content = EMPTY;
+                    break;
                 }
-                free(current->details.item);
-                current->content = EMPTY;
-            } else if (current->content == TREASURE) {
-                PRINTTREASURE();
-                printf("\nJe hebt de schat gevonden! Je wint het spel!\n");
-                return;
-            } else {
-                printf("De kamer is leeg.\n");
+
+                case TREASURE:
+                    PRINTTREASURE();
+                    printf("\nJe hebt de schat gevonden! Je wint het spel!\n");
+                    return;
+
+                case EMPTY:
+                default:
+                    printf("De kamer is leeg.\n\n");
+                    break;
             }
         } else {
-            printf("Je bent hier al geweest.\n");
+            printf("Je bent hier al geweest.\n\n");
         }
 
         // Toon beschikbare deuren
@@ -172,20 +190,18 @@ void playGame(Player* speler, Room* kamers, int aantalKamers) {
         printf("\n");
 
         char input[10];
-        printf("Kies een kamer om naar toe te gaan (of typ 's' om op te slaan): \n\n>");
+        printf("Kies een kamer om naar toe te gaan (of typ 's' om op te slaan):\n> ");
         scanf("%s", input);
 
         if (strcmp(input, "s") == 0) {
             saveGameJson(speler, kamers, aantalKamers, "SAVEFILES/savegame.json");
-            printf("✅ Spel opgeslagen. Kies opnieuw.\n");
             sleep(2);
-            continue; // spring naar volgende iteratie van de loop
+            continue;
         }
 
-        int keuze = atoi(input); // zet string om naar int
-
-        // Controleer of de keuze geldig is
+        int keuze = atoi(input);
         int geldig = 0;
+
         for (int i = 0; i < current->neighborCount; i++) {
             if (current->neighbors[i]->id == keuze) {
                 speler->currentRoom = current->neighbors[i];
@@ -195,7 +211,7 @@ void playGame(Player* speler, Room* kamers, int aantalKamers) {
         }
 
         if (!geldig) {
-            printf("Ongeldige keuze! Probeer opnieuw.\n");
+            printf("❌ Ongeldige keuze! Probeer opnieuw.\n");
         }
     }
 }
@@ -253,23 +269,22 @@ void saveGameJson(Player* speler, Room* kamers, int aantalKamers, const char* fi
         fprintf(file, "    }%s\n", (i == aantalKamers - 1) ? "" : ",");
     }
     fprintf(file, "  ]\n");
-
     fprintf(file, "}\n");
 
     fclose(file);
-    printf("Spel opgeslagen als JSON naar %s.\n", filename);
+    printf("\n✅ Spel opgeslagen als JSON naar %s.", filename);
 }
 
 Player* loadGameJson(Room** kamersOut, int* aantalKamersOut, const char* filename) {
     FILE* file = fopen(filename, "r");
     if (!file) {
-        printf("Kan JSON-bestand niet openen.\n");
+        printf("❌ Kan JSON-bestand niet openen: %s\n", filename);
         return NULL;
     }
 
     Player* speler = malloc(sizeof(Player));
     int maxKamers = 50;
-    Room* kamers = malloc(maxKamers * sizeof(Room));
+    Room* kamers = calloc(maxKamers, sizeof(Room));
     Room* currentRoom = NULL;
     int laatstGelezenID = -1;
     int currentRoomId = -1;
@@ -295,13 +310,12 @@ Player* loadGameJson(Room** kamersOut, int* aantalKamersOut, const char* filenam
         } else if (strstr(line, "\"currentRoom\":")) {
             sscanf(line, " %*[^0-9]%d", &currentRoomId);
         } else if (strstr(line, "\"id\":")) {
-            inMonster = 0;
-            inItem = 0;
+            inMonster = inItem = 0;
             int id;
             sscanf(line, " %*[^0-9]%d", &id);
             kamers[id].id = id;
             kamers[id].neighborCount = 0;
-            kamers[id].neighbors = malloc(4 * sizeof(Room*));
+            kamers[id].neighbors = calloc(4, sizeof(Room*));
             kamers[id].content = EMPTY;
             kamers[id].visited = 0;
             currentRoom = &kamers[id];
@@ -358,12 +372,12 @@ Player* loadGameJson(Room** kamersOut, int* aantalKamersOut, const char* filenam
     *aantalKamersOut = laatstGelezenID + 1;
 
     CLEAR_SCREEN();
-    printf("✅ Spel succesvol geladen uit %s.\n", filename);
+    printf("\n✅ Spel succesvol geladen uit %s.", filename);
     sleep(2);
     return speler;
 }
 
-void freeDungeon(Room* kamers, int aantalKamers, Player* loadspeler) {
+void freeDungeon(Room* kamers, int aantalKamers, Player* speler) {
     for (int i = 0; i < aantalKamers; i++) {
         switch (kamers[i].content) {
             case MONSTER:
@@ -379,9 +393,10 @@ void freeDungeon(Room* kamers, int aantalKamers, Player* loadspeler) {
             default:
                 break;
         }
+        free(kamers[i].neighbors);
     }
-    if (loadspeler != NULL) {
-        free(loadspeler);
+    if (speler != NULL) {
+        free(speler);
     }
     free(kamers);
 }

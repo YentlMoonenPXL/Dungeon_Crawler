@@ -6,7 +6,7 @@
 #include "Dungeon.h"
 
 #ifdef _WIN32
-#include <windows.h> //speciaal voor output met emojis te krijgen bij run met ./main.exe + arg
+#include <windows.h> // Speciaal voor output met emojis te krijgen bij run met ./main.exe + arg
 #endif
 
 int kiesAantalKamers() {
@@ -35,7 +35,7 @@ int kiesAantalKamers() {
 
 int main(int argc, char* argv[]) {
     #ifdef _WIN32
-    SetConsoleOutputCP(CP_UTF8); 
+    SetConsoleOutputCP(CP_UTF8);
     #endif
 
     Player speler;
@@ -45,7 +45,7 @@ int main(int argc, char* argv[]) {
     char again;
     bool loadGame = false;
 
-    if (argc == 2) { //als er een argument (nummer of savefile) mee gegeven wordt met ./main.exe
+    if (argc == 2) { // Als er een argument (nummer of savefile) mee gegeven wordt met ./main.exe
         // In powershell terminal voer eerst "[Console]::OutputEncoding = [System.Text.UTF8Encoding]::UTF8" uit
         int mogelijkAantal = atoi(argv[1]);
 
@@ -75,9 +75,9 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    PRINTINTRO();
+    //PRINTINTRO();
     startmenu:
-    do //lus voor terug naar home te gaan of spel af te sluiten na het einde van een run.
+    do // Lus voor terug naar home te gaan of spel af te sluiten na het einde van een run.
     {    
         loadGame = false;
         PRINTHOME();
@@ -116,10 +116,10 @@ int main(int argc, char* argv[]) {
             playGame(&speler, dungeon, aantalKamers);
         }
 
-        printf("Ga terug naar het hoofdmenu? (y/n)\n\n>");
+        printf("Ga terug naar het hoofdmenu? (y/n)\n\n> ");
         scanf(" %c", &again);
         int c;
-        while ((c = getchar()) != '\n' && c != EOF); //clear input buffer
+        while ((c = getchar()) != '\n' && c != EOF); // Clear input buffer
 
         freeDungeon(dungeon, aantalKamers, loadGame ? loadSpeler : NULL);
 
