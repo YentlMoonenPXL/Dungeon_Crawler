@@ -1,7 +1,7 @@
 {
   "player": {
-    "hp": 35,
-    "damage": 5,
+    "hp": 999,
+    "damage": 999,
     "currentRoom": 3
   },
   "rooms": [

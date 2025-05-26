@@ -150,7 +150,6 @@ void playGame(Player* speler, Room* kamers, int aantalKamers) {
                     }
                     break;
                 }
-
                 case ITEM: {
                     Item* item = current->details.item;
                     printf("🎁 Je vindt een item: ");
@@ -167,7 +166,6 @@ void playGame(Player* speler, Room* kamers, int aantalKamers) {
                     current->content = EMPTY;
                     break;
                 }
-
                 case TREASURE:
                     PRINTTREASURE();
                     printf("\nJe hebt de schat gevonden! Je wint het spel!\n");
@@ -187,10 +185,9 @@ void playGame(Player* speler, Room* kamers, int aantalKamers) {
         for (int i = 0; i < current->neighborCount; i++) {
             printf("%d ", current->neighbors[i]->id);
         }
-        printf("\n");
 
         char input[10];
-        printf("Kies een kamer om naar toe te gaan (of typ 's' om op te slaan):\n> ");
+        printf("\nKies een kamer om naar toe te gaan (of typ 's' om op te slaan):\n\n> ");
         scanf("%s", input);
 
         if (strcmp(input, "s") == 0) {

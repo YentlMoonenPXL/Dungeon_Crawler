@@ -46,7 +46,6 @@ int main(int argc, char* argv[]) {
     bool loadGame = false;
 
     if (argc == 2) { // Als er een argument (nummer of savefile) mee gegeven wordt met ./main.exe
-        // In powershell terminal voer eerst "[Console]::OutputEncoding = [System.Text.UTF8Encoding]::UTF8" uit
         int mogelijkAantal = atoi(argv[1]);
 
         if (mogelijkAantal > 0) {
@@ -102,7 +101,7 @@ int main(int argc, char* argv[]) {
             } else {
                 printf("\nOngeldige keuze. Probeer opnieuw.\n");
                 sleep(2);
-                continue;
+                goto startmenu;
             }
         }
         
